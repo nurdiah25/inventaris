@@ -2,14 +2,14 @@
 
 @section('content')
 <div class="page-header d-flex justify-content-between align-items-center">
-    <h3 class="page-title">Data Barang - Gudang</h3>
+    <h3 class="page-title">Data Barang - {{ ucfirst($cabangData->nama_cabang) }}</h3>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambahBarang">
         <i class="bi bi-plus-circle"></i> Tambah Barang
     </button>
 </div>
 
 @if(session('success'))
-<div class="alert alert-success">{{ session('success') }}</div>
+<div class="alert alert-success mt-2">{{ session('success') }}</div>
 @endif
 
 <div class="card mt-3">
@@ -40,7 +40,7 @@
                             </button>
 
                             <!-- Tombol Hapus -->
-                            <form action="{{ route('gudang.barang.destroy', $barang->id_barang) }}" method="POST" class="d-inline">
+                            <form action="{{ route($cabangData->nama_cabang . '.barang.destroy', $barang->id_barang) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus barang ini?')">
@@ -51,14 +51,14 @@
                     </tr>
 
                     <!-- Modal Edit Barang -->
-                    <div class="modal fade" id="modalEditBarang{{ $barang->id_barang }}" tabindex="-1" aria-labelledby="modalEditBarangLabel{{ $barang->id_barang }}" aria-hidden="true">
+                    <div class="modal fade" id="modalEditBarang{{ $barang->id_barang }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <form action="{{ route('gudang.barang.update', $barang->id_barang) }}" method="POST">
+                                <form action="{{ route($cabangData->nama_cabang . '.barang.update', $barang->id_barang) }}" method="POST">
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="modalEditBarangLabel{{ $barang->id_barang }}">Edit Barang</h5>
+                                        <h5 class="modal-title">Edit Barang</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
 
@@ -81,7 +81,7 @@
 
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                        <button type="submit" class="btn btn-primary">Simpan</button>
                                     </div>
                                 </form>
                             </div>
@@ -99,13 +99,13 @@
 </div>
 
 <!-- Modal Tambah Barang -->
-<div class="modal fade" id="modalTambahBarang" tabindex="-1" aria-labelledby="modalTambahBarangLabel" aria-hidden="true">
+<div class="modal fade" id="modalTambahBarang" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('gudang.barang.store') }}" method="POST">
+            <form action="{{ route($cabangData->nama_cabang . '.barang.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTambahBarangLabel">Tambah Barang</h5>
+                    <h5 class="modal-title">Tambah Barang</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 

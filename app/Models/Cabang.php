@@ -17,4 +17,14 @@ class Cabang extends Model
     {
         return $this->hasMany(Barang::class, 'id_cabang', 'id_cabang');
     }
+
+    public function stoks()
+    {
+        return $this->hasMany(Stok::class, 'id_cabang', 'id_cabang');
+    }
+
+    public function pengirimans()
+    {
+        return $this->hasMany(Pengiriman::class, 'id_cabang', 'id_cabang');
+    }
 }

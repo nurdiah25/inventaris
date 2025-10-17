@@ -5,21 +5,22 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\PengirimanController;
 
-
 Route::get('/', function () {
     return view('dashboard');
 })->name('dashboard');
 
+
+// =======================
 // CABANG BANJARBARU
 // =======================
 Route::prefix('banjarbaru')->group(function () {
 
-    // barang
-     Route::get('/barang', [BarangController::class, 'index'])
+    // Barang
+    Route::get('/barang', [BarangController::class, 'index'])
         ->defaults('cabang', 'banjarbaru')
         ->name('banjarbaru.barang');
 
-     Route::post('/barang', [BarangController::class, 'store'])
+    Route::post('/barang', [BarangController::class, 'store'])
         ->defaults('cabang', 'banjarbaru')
         ->name('banjarbaru.barang.store');
 
@@ -48,7 +49,7 @@ Route::prefix('banjarbaru')->group(function () {
         ->defaults('cabang', 'banjarbaru')
         ->name('banjarbaru.stok.destroy');
 
-    // PENGIRIMAN
+    // Pengiriman
     Route::get('/pengiriman', [PengirimanController::class, 'index'])
         ->defaults('cabang', 'banjarbaru')
         ->name('banjarbaru.pengiriman');
@@ -66,6 +67,8 @@ Route::prefix('banjarbaru')->group(function () {
         ->name('banjarbaru.pengiriman.destroy');
 });
 
+
+// =======================
 // CABANG MARTAPURA
 // =======================
 Route::prefix('martapura')->group(function () {
@@ -115,13 +118,15 @@ Route::prefix('martapura')->group(function () {
 
     Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
         ->defaults('cabang', 'martapura')
-        ->name('martapura.pengiriman.updateStatus'); 
+        ->name('martapura.pengiriman.updateStatus');
 
     Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
         ->defaults('cabang', 'martapura')
         ->name('martapura.pengiriman.destroy');
 });
 
+
+// =======================
 // CABANG LIANG ANGGANG
 // =======================
 Route::prefix('lianganggang')->group(function () {
@@ -171,55 +176,68 @@ Route::prefix('lianganggang')->group(function () {
 
     Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
         ->defaults('cabang', 'lianganggang')
-        ->name('lianganggang.pengiriman.updateStatus'); 
+        ->name('lianganggang.pengiriman.updateStatus');
 
     Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
         ->defaults('cabang', 'lianganggang')
         ->name('lianganggang.pengiriman.destroy');
+});
 
-// GUDANG
+
 // =======================
-Route::prefix('gudang')->group(function () {
+// GUDANG PUSAT
+// =======================
+Route::prefix('gudangpusat')->group(function () {
 
-    // Barang Gudang
-    Route::get('/barang', [BarangController::class, 'indexGudang'])
-        ->name('gudang.barang');
+    // Barang
+    Route::get('/barang', [BarangController::class, 'index'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.barang');
 
-    Route::post('/barang', [BarangController::class, 'storeGudang'])
-        ->name('gudang.barang.store');
+    Route::post('/barang', [BarangController::class, 'store'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.barang.store');
 
-    Route::put('/barang/{id_barang}', [BarangController::class, 'updateGudang'])
-        ->name('gudang.barang.update');
+    Route::put('/barang/{id_barang}', [BarangController::class, 'update'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.barang.update');
 
-    Route::delete('/barang/{id_barang}', [BarangController::class, 'destroyGudang'])
-        ->name('gudang.barang.destroy');
+    Route::delete('/barang/{id_barang}', [BarangController::class, 'destroy'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.barang.destroy');
 
-    // Stok Gudang
-    Route::get('/stok', [StokController::class, 'indexGudang'])
-        ->name('gudang.stok');
+    // Stok
+    Route::get('/stok', [StokController::class, 'index'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.stok');
 
-    Route::post('/stok', [StokController::class, 'storeGudang'])
-        ->name('gudang.stok.store');
+    Route::post('/stok', [StokController::class, 'store'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.stok.store');
 
-    Route::put('/stok/{id_stok}', [StokController::class, 'updateGudang'])
-        ->name('gudang.stok.update');
+    Route::put('/stok/{id_stok}', [StokController::class, 'update'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.stok.update');
 
-    Route::delete('/stok/{id_stok}', [StokController::class, 'destroyGudang'])
-        ->name('gudang.stok.destroy');
+    Route::delete('/stok/{id_stok}', [StokController::class, 'destroy'])
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.stok.destroy');
 
-    // Pengiriman Gudang
+    // Pengiriman
     Route::get('/pengiriman', [PengirimanController::class, 'index'])
-        ->name('gudang.pengiriman');
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.pengiriman');
 
     Route::post('/pengiriman', [PengirimanController::class, 'store'])
-        ->name('gudang.pengiriman.store');
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.pengiriman.store');
 
     Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
-        ->name('gudang.pengiriman.updateStatus');
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.pengiriman.updateStatus');
 
     Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
-        ->name('gudang.pengiriman.destroy');
+        ->defaults('cabang', 'gudangpusat')
+        ->name('gudangpusat.pengiriman.destroy');
 });
 
-
-});

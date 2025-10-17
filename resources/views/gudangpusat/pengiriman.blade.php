@@ -40,7 +40,7 @@
                         <td>{{ ucfirst($item->tujuan_pengiriman) }}</td>
                         <td>{{ $item->tanggal_pengiriman }}</td>
                         <td>
-                            <form action="{{ route('gudang.pengiriman.updateStatus', $item->id_pengiriman) }}" method="POST">
+                            <form action="{{ route('gudangpusat.pengiriman.updateStatus', $item->id_pengiriman) }}" method="POST">
                                 @csrf
                                 @method('PUT')
                                 <select name="status_pengiriman" class="form-select form-select-sm" onchange="this.form.submit()">
@@ -51,7 +51,7 @@
                             </form>
                         </td>
                         <td>
-                            <form action="{{ route('gudang.pengiriman.destroy', $item->id_pengiriman) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pengiriman ini?')">
+                            <form action="{{ route('gudangpusat.pengiriman.destroy', $item->id_pengiriman) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pengiriman ini?')">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-danger btn-sm">Hapus</button>
@@ -73,7 +73,7 @@
 <div class="modal fade" id="modalTambahPengiriman" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route('gudang.pengiriman.store') }}" method="POST">
+            <form action="{{ route('gudangpusat.pengiriman.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Pengiriman</h5>

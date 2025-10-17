@@ -14,7 +14,7 @@ class Pengiriman extends Model
 
     protected $fillable = [
         'id_barang',
-        'id_gudang',
+        'id_cabang',
         'tujuan_pengiriman',
         'jumlah',
         'tanggal_pengiriman',
@@ -23,11 +23,11 @@ class Pengiriman extends Model
 
     public function barang()
     {
-        return $this->belongsTo(Barang::class, 'id_barang');
+        return $this->belongsTo(Barang::class, 'id_barang', 'id_barang');
     }
 
-    public function gudang()
+    public function cabang()
     {
-        return $this->belongsTo(Gudang::class, 'id_gudang');
+        return $this->belongsTo(Cabang::class, 'id_cabang', 'id_cabang');
     }
 }
