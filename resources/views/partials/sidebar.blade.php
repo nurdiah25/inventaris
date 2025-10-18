@@ -28,6 +28,7 @@
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{ route('banjarbaru.barang') }}">Data Barang</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{ route('banjarbaru.stok') }}">Stok</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('banjarbaru.riwayat') }}">Riwayat Pengiriman</a></li>
         </ul>
       </div>
     </li>
@@ -43,6 +44,7 @@
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{ route('martapura.barang') }}">Data Barang</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{ route('martapura.stok') }}">Stok</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('martapura.riwayat') }}">Riwayat Pengiriman</a></li>
         </ul>
       </div>
     </li>
@@ -58,6 +60,7 @@
         <ul class="nav flex-column sub-menu">
           <li class="nav-item"> <a class="nav-link" href="{{ route('lianganggang.barang') }}">Data Barang</a></li>
           <li class="nav-item"> <a class="nav-link" href="{{ route('lianganggang.stok') }}">Stok</a></li>
+          <li class="nav-item"> <a class="nav-link" href="{{ route('lianganggang.riwayat') }}">Riwayat Pengiriman</a></li>
         </ul>
       </div>
     </li>

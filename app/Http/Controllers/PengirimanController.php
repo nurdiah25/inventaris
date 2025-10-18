@@ -81,4 +81,19 @@ class PengirimanController extends Controller
 
         return redirect()->route('gudangpusat.pengiriman')->with('success', 'Data pengiriman berhasil dihapus.');
     }
+
+    // === Riwayat Pengiriman ke Cabang ===
+    public function riwayat($cabang)
+    {
+        $cabangData = Cabang::where('nama_cabang', $cabang)->firstOrFail();
+
+    // Ambil semua pengiriman dari gudangpusat ke cabang ini
+        $riwayat = Pengiriman::with('barang')
+            ->where('tujuan_pengiriman', $cabangData->nama_cabang)
+            ->latest()
+            ->get();
+
+        return view("$cabang.riwayat", compact('riwayat', 'cabangData'));
+    }
+
 }

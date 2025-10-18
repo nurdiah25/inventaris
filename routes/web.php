@@ -49,22 +49,26 @@ Route::prefix('banjarbaru')->group(function () {
         ->defaults('cabang', 'banjarbaru')
         ->name('banjarbaru.stok.destroy');
 
-    // Pengiriman
-    Route::get('/pengiriman', [PengirimanController::class, 'index'])
+    // Riwayat Pengiriman
+    Route::get('/riwayat-pengiriman', [PengirimanController::class, 'riwayat'])
         ->defaults('cabang', 'banjarbaru')
-        ->name('banjarbaru.pengiriman');
+        ->name('banjarbaru.riwayat');
 
-    Route::post('/pengiriman', [PengirimanController::class, 'store'])
-        ->defaults('cabang', 'banjarbaru')
-        ->name('banjarbaru.pengiriman.store');
+    // Route::get('/pengiriman', [PengirimanController::class, 'index'])
+    //     ->defaults('cabang', 'banjarbaru')
+    //     ->name('banjarbaru.pengiriman');
 
-    Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
-        ->defaults('cabang', 'banjarbaru')
-        ->name('banjarbaru.pengiriman.updateStatus');
+    // Route::post('/pengiriman', [PengirimanController::class, 'store'])
+    //     ->defaults('cabang', 'banjarbaru')
+    //     ->name('banjarbaru.pengiriman.store');
 
-    Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
-        ->defaults('cabang', 'banjarbaru')
-        ->name('banjarbaru.pengiriman.destroy');
+    // Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
+    //     ->defaults('cabang', 'banjarbaru')
+    //     ->name('banjarbaru.pengiriman.updateStatus');
+
+    // Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
+    //     ->defaults('cabang', 'banjarbaru')
+    //     ->name('banjarbaru.pengiriman.destroy');
 });
 
 
@@ -108,21 +112,24 @@ Route::prefix('martapura')->group(function () {
         ->name('martapura.stok.destroy');
 
     // Pengiriman
-    Route::get('/pengiriman', [PengirimanController::class, 'index'])
+    Route::get('/riwayat-pengiriman', [PengirimanController::class, 'riwayat'])
         ->defaults('cabang', 'martapura')
-        ->name('martapura.pengiriman');
+        ->name('martapura.riwayat');
+    // Route::get('/pengiriman', [PengirimanController::class, 'index'])
+    //     ->defaults('cabang', 'martapura')
+    //     ->name('martapura.pengiriman');
 
-    Route::post('/pengiriman', [PengirimanController::class, 'store'])
-        ->defaults('cabang', 'martapura')
-        ->name('martapura.pengiriman.store');
+    // Route::post('/pengiriman', [PengirimanController::class, 'store'])
+    //     ->defaults('cabang', 'martapura')
+    //     ->name('martapura.pengiriman.store');
 
-    Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
-        ->defaults('cabang', 'martapura')
-        ->name('martapura.pengiriman.updateStatus');
+    // Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
+    //     ->defaults('cabang', 'martapura')
+    //     ->name('martapura.pengiriman.updateStatus');
 
-    Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
-        ->defaults('cabang', 'martapura')
-        ->name('martapura.pengiriman.destroy');
+    // Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
+    //     ->defaults('cabang', 'martapura')
+    //     ->name('martapura.pengiriman.destroy');
 });
 
 
@@ -166,21 +173,24 @@ Route::prefix('lianganggang')->group(function () {
         ->name('lianganggang.stok.destroy');
 
     // Pengiriman
-    Route::get('/pengiriman', [PengirimanController::class, 'index'])
+    Route::get('/riwayat-pengiriman', [PengirimanController::class, 'riwayat'])
         ->defaults('cabang', 'lianganggang')
-        ->name('lianganggang.pengiriman');
+        ->name('lianganggang.riwayat');
+    // Route::get('/pengiriman', [PengirimanController::class, 'index'])
+    //     ->defaults('cabang', 'lianganggang')
+    //     ->name('lianganggang.pengiriman');
 
-    Route::post('/pengiriman', [PengirimanController::class, 'store'])
-        ->defaults('cabang', 'lianganggang')
-        ->name('lianganggang.pengiriman.store');
+    // Route::post('/pengiriman', [PengirimanController::class, 'store'])
+    //     ->defaults('cabang', 'lianganggang')
+    //     ->name('lianganggang.pengiriman.store');
 
-    Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
-        ->defaults('cabang', 'lianganggang')
-        ->name('lianganggang.pengiriman.updateStatus');
+    // Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
+    //     ->defaults('cabang', 'lianganggang')
+    //     ->name('lianganggang.pengiriman.updateStatus');
 
-    Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
-        ->defaults('cabang', 'lianganggang')
-        ->name('lianganggang.pengiriman.destroy');
+    // Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
+    //     ->defaults('cabang', 'lianganggang')
+    //     ->name('lianganggang.pengiriman.destroy');
 });
 
 
