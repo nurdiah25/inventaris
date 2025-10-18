@@ -58,6 +58,8 @@ Route::prefix('banjarbaru')->group(function () {
         ->name('banjarbaru.riwayat.terima');
 
 
+        });
+
 // =======================
 // CABANG MARTAPURA
 // =======================
@@ -184,20 +186,20 @@ Route::prefix('gudangpusat')->group(function () {
 
     // Stok
     Route::get('/stok', [StokController::class, 'index'])
-        ->defaults('cabang', 'gudangpusat')
-        ->name('gudangpusat.stok');
+        ->name('gudangpusat.stok')
+        ->defaults('cabang', 'gudangpusat');
 
     Route::post('/stok', [StokController::class, 'store'])
-        ->defaults('cabang', 'gudangpusat')
-        ->name('gudangpusat.stok.store');
+        ->name('gudangpusat.stok.store')
+        ->defaults('cabang', 'gudangpusat');
 
     Route::put('/stok/{id_stok}', [StokController::class, 'update'])
-        ->defaults('cabang', 'gudangpusat')
-        ->name('gudangpusat.stok.update');
+        ->name('gudangpusat.stok.update')
+        ->defaults('cabang', 'gudangpusat');
 
     Route::delete('/stok/{id_stok}', [StokController::class, 'destroy'])
-        ->defaults('cabang', 'gudangpusat')
-        ->name('gudangpusat.stok.destroy');
+        ->name('gudangpusat.stok.destroy')
+        ->defaults('cabang', 'gudangpusat');
 
     // Pengiriman
     Route::get('/pengiriman', [PengirimanController::class, 'index'])
@@ -218,5 +220,5 @@ Route::prefix('gudangpusat')->group(function () {
 });
 
 
-});
+
 
