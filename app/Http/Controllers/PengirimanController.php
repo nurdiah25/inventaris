@@ -64,14 +64,43 @@ class PengirimanController extends Controller
     }
 
     // === Update status pengiriman ===
-    public function updateStatus(Request $request, $id)
-    {
-        $pengiriman = Pengiriman::findOrFail($id);
-        $pengiriman->status_pengiriman = $request->status_pengiriman;
-        $pengiriman->save();
+public function updateStatus(Request $request, $id)
+{
+    $pengiriman = Pengiriman::findOrFail($id);
 
-        return redirect()->back()->with('success', 'Status pengiriman berhasil diperbarui.');
+    // Cegah perubahan jika status sudah Dikirim
+    if ($pengiriman->status_pengiriman === 'Dikirim') {
+        return redirect()->back()->with('error', 'Status sudah Dikirim dan tidak bisa diubah lagi.');
     }
+
+    $status = $request->status_pengiriman;
+    if (!in_array($status, ['Dikemas', 'Dikirim'])) {
+        return redirect()->back()->with('error', 'Status tidak valid untuk gudang.');
+    }
+
+    $pengiriman->status_pengiriman = $status;
+    $pengiriman->save();
+
+    return redirect()->back()->with('success', 'Status pengiriman berhasil diperbarui.');
+}
+
+    // === Update Penerimaan === //
+    public function updatePenerimaan($id)
+{
+    $pengiriman = Pengiriman::findOrFail($id);
+
+    // Hanya bisa diterima jika statusnya sudah dikirim
+    if ($pengiriman->status_pengiriman !== 'Dikirim') {
+        return redirect()->back()->with('error', 'Barang belum dikirim oleh gudang.');
+    }
+
+    $pengiriman->status_penerimaan = 'Diterima';
+    $pengiriman->status_pengiriman = 'Diterima';
+    $pengiriman->save();
+
+    return redirect()->back()->with('success', 'Barang telah diterima cabang.');
+}
+
 
     // === Hapus pengiriman ===
     public function destroy($id)

@@ -19,6 +19,7 @@ class Pengiriman extends Model
         'jumlah',
         'tanggal_pengiriman',
         'status_pengiriman',
+        'status_penerimaan',
     ];
 
     public function barang()

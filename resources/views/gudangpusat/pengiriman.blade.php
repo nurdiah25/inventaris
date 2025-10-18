@@ -27,7 +27,8 @@
                         <th>Jumlah</th>
                         <th>Tujuan</th>
                         <th>Tanggal</th>
-                        <th>Status</th>
+                        <th>Status Pengiriman</th>
+                        <th>Status Penerimaan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -38,29 +39,37 @@
                         <td>{{ $item->barang->nama_barang }}</td>
                         <td>{{ $item->jumlah }}</td>
                         <td>{{ ucfirst($item->tujuan_pengiriman) }}</td>
-                        <td>{{ $item->tanggal_pengiriman }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->tanggal_pengiriman)->format('d M Y') }}</td>
                         <td>
                             <form action="{{ route('gudangpusat.pengiriman.updateStatus', $item->id_pengiriman) }}" method="POST">
                                 @csrf
                                 @method('PUT')
-                                <select name="status_pengiriman" class="form-select form-select-sm" onchange="this.form.submit()">
+                                <select name="status_pengiriman"
+                                    class="form-select form-select-sm"
+                                    onchange="this.form.submit()"
+                                    {{ $item->status_pengiriman == 'Dikirim' || $item->status_pengiriman == 'Diterima' ? 'disabled' : '' }}>
                                     <option value="Dikemas" {{ $item->status_pengiriman == 'Dikemas' ? 'selected' : '' }}>Dikemas</option>
                                     <option value="Dikirim" {{ $item->status_pengiriman == 'Dikirim' ? 'selected' : '' }}>Dikirim</option>
-                                    <option value="Terkirim" {{ $item->status_pengiriman == 'Terkirim' ? 'selected' : '' }}>Terkirim</option>
                                 </select>
                             </form>
                         </td>
+                        <td>{{ $item->status_penerimaan ?? '-' }}</td>
                         <td>
-                            <form action="{{ route('gudangpusat.pengiriman.destroy', $item->id_pengiriman) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pengiriman ini?')">
+                            <form action="{{ route('gudangpusat.pengiriman.destroy', $item->id_pengiriman) }}"
+                                  method="POST"
+                                  onsubmit="return confirm('Yakin ingin menghapus pengiriman ini?')">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-danger btn-sm">Hapus</button>
+                                <button class="btn btn-danger btn-sm"
+                                    {{ $item->status_pengiriman != 'Dikemas' ? 'disabled' : '' }}>
+                                    Hapus
+                                </button>
                             </form>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted">Belum ada pengiriman dari gudang</td>
+                        <td colspan="8" class="text-center text-muted">Belum ada pengiriman dari gudang</td>
                     </tr>
                     @endforelse
                 </tbody>

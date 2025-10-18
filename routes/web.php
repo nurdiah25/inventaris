@@ -4,10 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\PengirimanController;
+use App\Http\Controllers\DashboardController;
 
-Route::get('/', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 
 // =======================
@@ -54,22 +53,9 @@ Route::prefix('banjarbaru')->group(function () {
         ->defaults('cabang', 'banjarbaru')
         ->name('banjarbaru.riwayat');
 
-    // Route::get('/pengiriman', [PengirimanController::class, 'index'])
-    //     ->defaults('cabang', 'banjarbaru')
-    //     ->name('banjarbaru.pengiriman');
-
-    // Route::post('/pengiriman', [PengirimanController::class, 'store'])
-    //     ->defaults('cabang', 'banjarbaru')
-    //     ->name('banjarbaru.pengiriman.store');
-
-    // Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
-    //     ->defaults('cabang', 'banjarbaru')
-    //     ->name('banjarbaru.pengiriman.updateStatus');
-
-    // Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
-    //     ->defaults('cabang', 'banjarbaru')
-    //     ->name('banjarbaru.pengiriman.destroy');
-});
+    Route::put('/riwayat-pengiriman/{id_pengiriman}/terima', [PengirimanController::class, 'updatePenerimaan'])
+        ->defaults('cabang', 'banjarbaru') // sesuaikan tiap cabang
+        ->name('banjarbaru.riwayat.terima');
 
 
 // =======================
@@ -115,21 +101,11 @@ Route::prefix('martapura')->group(function () {
     Route::get('/riwayat-pengiriman', [PengirimanController::class, 'riwayat'])
         ->defaults('cabang', 'martapura')
         ->name('martapura.riwayat');
-    // Route::get('/pengiriman', [PengirimanController::class, 'index'])
-    //     ->defaults('cabang', 'martapura')
-    //     ->name('martapura.pengiriman');
 
-    // Route::post('/pengiriman', [PengirimanController::class, 'store'])
-    //     ->defaults('cabang', 'martapura')
-    //     ->name('martapura.pengiriman.store');
+    Route::put('/riwayat-pengiriman/{id_pengiriman}/terima', [PengirimanController::class, 'updatePenerimaan'])
+        ->defaults('cabang', 'martapura') // sesuaikan tiap cabang
+        ->name('martapura.riwayat.terima');
 
-    // Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
-    //     ->defaults('cabang', 'martapura')
-    //     ->name('martapura.pengiriman.updateStatus');
-
-    // Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
-    //     ->defaults('cabang', 'martapura')
-    //     ->name('martapura.pengiriman.destroy');
 });
 
 
@@ -176,21 +152,11 @@ Route::prefix('lianganggang')->group(function () {
     Route::get('/riwayat-pengiriman', [PengirimanController::class, 'riwayat'])
         ->defaults('cabang', 'lianganggang')
         ->name('lianganggang.riwayat');
-    // Route::get('/pengiriman', [PengirimanController::class, 'index'])
-    //     ->defaults('cabang', 'lianganggang')
-    //     ->name('lianganggang.pengiriman');
 
-    // Route::post('/pengiriman', [PengirimanController::class, 'store'])
-    //     ->defaults('cabang', 'lianganggang')
-    //     ->name('lianganggang.pengiriman.store');
+    Route::put('/riwayat-pengiriman/{id_pengiriman}/terima', [PengirimanController::class, 'updatePenerimaan'])
+        ->defaults('cabang', 'lianganggang') // sesuaikan tiap cabang
+        ->name('lianganggang.riwayat.terima');
 
-    // Route::put('/pengiriman/{id_pengiriman}/status', [PengirimanController::class, 'updateStatus'])
-    //     ->defaults('cabang', 'lianganggang')
-    //     ->name('lianganggang.pengiriman.updateStatus');
-
-    // Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
-    //     ->defaults('cabang', 'lianganggang')
-    //     ->name('lianganggang.pengiriman.destroy');
 });
 
 
@@ -249,5 +215,8 @@ Route::prefix('gudangpusat')->group(function () {
     Route::delete('/pengiriman/{id_pengiriman}', [PengirimanController::class, 'destroy'])
         ->defaults('cabang', 'gudangpusat')
         ->name('gudangpusat.pengiriman.destroy');
+});
+
+
 });
 
