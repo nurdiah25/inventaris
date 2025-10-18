@@ -1,20 +1,55 @@
+<style>
+  /* === Styling khusus logo & teks navbar === */
+  .brand-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0px; /* jarak antara logo dan teks */
+  }
+
+  .navbar-logo {
+    height: 85px;
+    border-radius: 3px;
+  }
+
+  .navbar-brand-wrapper h4 {
+    color: #fff;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  /* Sembunyikan teks di layar kecil */
+  @media (max-width: 992px) {
+    .navbar-brand-wrapper h4 {
+      display: none;
+    }
+  }
+</style>
+
 <nav class="navbar col-lg-12 col-12 px-0 py-0 py-lg-4 d-flex flex-row">
-  <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+  <div class="navbar-menu-wrapper d-flex align-items-center justify-content-between">
+
+    <!-- Tombol Sidebar -->
     <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
       <span class="mdi mdi-menu"></span>
     </button>
-    <div class="navbar-brand-wrapper">
-      <a class="navbar-brand brand-logo" href="index.html"><img src="images/logo.svg" alt="logo"/></a>
-      <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a>
+
+    <!-- Logo + Nama Brand -->
+    <div class="navbar-brand-wrapper brand-wrapper">
+      <a class="navbar-brand brand-logo" href="{{ route('dashboard') }}">
+        <img src="{{ asset('images/RGlogo.webp') }}" alt="Logo Restu Guru" class="navbar-logo">
+      </a>
+      <h3 class="font-weight-bold mb-2 d-none d-md-block">Restu Guru Promosindo</h3>
     </div>
-    <h4 class="font-weight-bold mb-0 d-none d-md-block mt-1">Restu Guru Promosindo</h4>
-    <ul class="navbar-nav navbar-nav-right">
+
+    <!-- Bagian kanan (tanggal + ikon) -->
+    <ul class="navbar-nav navbar-nav-right d-flex align-items-center">
       <li class="nav-item">
-        <!-- Ganti bagian tanggal -->
         <h4 class="mb-0 font-weight-bold d-none d-xl-block">
           {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
         </h4>
       </li>
+
+      <!-- Messages -->
       <li class="nav-item dropdown me-1">
         <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-bs-toggle="dropdown">
           <i class="mdi mdi-calendar mx-0"></i>
@@ -28,9 +63,7 @@
             </div>
             <div class="preview-item-content flex-grow">
               <h6 class="preview-subject ellipsis font-weight-normal">David Grey</h6>
-              <p class="font-weight-light small-text text-muted mb-0">
-                The meeting is cancelled
-              </p>
+              <p class="font-weight-light small-text text-muted mb-0">The meeting is cancelled</p>
             </div>
           </a>
           <a class="dropdown-item preview-item">
@@ -39,9 +72,7 @@
             </div>
             <div class="preview-item-content flex-grow">
               <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook</h6>
-              <p class="font-weight-light small-text text-muted mb-0">
-                New product launch
-              </p>
+              <p class="font-weight-light small-text text-muted mb-0">New product launch</p>
             </div>
           </a>
           <a class="dropdown-item preview-item">
@@ -50,13 +81,13 @@
             </div>
             <div class="preview-item-content flex-grow">
               <h6 class="preview-subject ellipsis font-weight-normal">Johnson</h6>
-              <p class="font-weight-light small-text text-muted mb-0">
-                Upcoming board meeting
-              </p>
+              <p class="font-weight-light small-text text-muted mb-0">Upcoming board meeting</p>
             </div>
           </a>
         </div>
       </li>
+
+      <!-- Notifications -->
       <li class="nav-item dropdown me-2">
         <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
           <i class="mdi mdi-email-open mx-0"></i>
@@ -99,12 +130,17 @@
           </a>
         </div>
       </li>
+
+      <!-- Tombol menu mobile -->
+      <li class="nav-item d-lg-none">
+        <button class="navbar-toggler navbar-toggler-right align-self-center" type="button" data-toggle="offcanvas">
+          <span class="mdi mdi-menu"></span>
+        </button>
+      </li>
     </ul>
-    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-      <span class="mdi mdi-menu"></span>
-    </button>
   </div>
 
+  <!-- Bagian Search & Profile -->
   <div class="navbar-menu-wrapper navbar-search-wrapper d-none d-lg-flex align-items-center">
     <ul class="navbar-nav mr-lg-2">
       <li class="nav-item nav-search d-none d-lg-block">
@@ -113,6 +149,8 @@
         </div>
       </li>
     </ul>
+
+    <!-- Profile dan Icon -->
     <ul class="navbar-nav navbar-nav-right">
       <li class="nav-item nav-profile dropdown">
         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
@@ -120,29 +158,13 @@
           <span class="nav-profile-name">Eleanor Richardson</span>
         </a>
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-          <a class="dropdown-item">
-            <i class="mdi mdi-settings text-primary"></i> Settings
-          </a>
-          <a class="dropdown-item">
-            <i class="mdi mdi-logout text-primary"></i> Logout
-          </a>
+          <a class="dropdown-item"><i class="mdi mdi-settings text-primary"></i> Settings</a>
+          <a class="dropdown-item"><i class="mdi mdi-logout text-primary"></i> Logout</a>
         </div>
       </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link icon-link">
-          <i class="mdi mdi-plus-circle-outline"></i>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link icon-link">
-          <i class="mdi mdi-web"></i>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a href="#" class="nav-link icon-link">
-          <i class="mdi mdi-clock-outline"></i>
-        </a>
-      </li>
+      <li class="nav-item"><a href="#" class="nav-link icon-link"><i class="mdi mdi-plus-circle-outline"></i></a></li>
+      <li class="nav-item"><a href="#" class="nav-link icon-link"><i class="mdi mdi-web"></i></a></li>
+      <li class="nav-item"><a href="#" class="nav-link icon-link"><i class="mdi mdi-clock-outline"></i></a></li>
     </ul>
   </div>
 </nav>
