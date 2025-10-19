@@ -1,36 +1,161 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sistem Inventaris</title>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <!-- === CSS Spica (Bootstrap 4, tapi kompatibel dgn BS5 JS) === -->
+    <link rel="stylesheet" href="{{ asset('spica/template/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('spica/template/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('spica/template/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('spica/template/images/favicon.png') }}" />
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f4f4f4;
+        }
+        .main-panel {
+            width: calc(100% - 240px);
+            min-height: 100vh;
+        }
+        .navbar {
+            z-index: 1000;
+        }
+        /* styling tambahan untuk tombol logout di dropdown */
+        form.logout-form button {
+            border: none;
+            background: none;
+            color: #212529;
+            width: 100%;
+            text-align: left;
+            padding: 8px 16px;
+        }
+        form.logout-form button:hover {
+            background-color: #f2f2f2;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        {{-- === NAVBAR === --}}
+        @include('partials.navbar')
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+        <div class="container-fluid page-body-wrapper">
+            {{-- === SIDEBAR === --}}
+            @include('partials.sidebar')
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
+            {{-- === KONTEN UTAMA === --}}
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    @yield('content')
+                </div>
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                {{-- === FOOTER === --}}
+                @include('partials.footer')
+            </div>
         </div>
-    </body>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- === JS SPICA === -->
+    <script src="{{ asset('spica/template/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('spica/template/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('spica/template/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ asset('spica/template/js/misc.js') }}"></script>
+    <script src="{{ asset('spica/template/js/template.js') }}"></script>
+
+    <!-- === jQuery untuk Global Search === -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+    $(document).ready(function () {
+        $('#navbarSearch').on('keypress', function (e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                const keyword = $(this).val().trim().toLowerCase();
+                if (keyword === '') return;
+
+                const currentPath = window.location.pathname;
+
+                // Pemetaan halaman dan ID tabel/div utama
+                const pageMap = {
+                    '/dashboard': '#dashboardContainer',
+                    '/banjarbaru/barang': '#tableBarang',
+                    '/banjarbaru/stok': '#tableStok',
+                    '/banjarbaru/riwayat': '#tableRiwayat',
+                    '/martapura/barang': '#tableBarang',
+                    '/martapura/stok': '#tableStok',
+                    '/martapura/riwayat': '#tableRiwayat',
+                    '/lianganggang/barang': '#tableBarang',
+                    '/lianganggang/stok': '#tableStok',
+                    '/lianganggang/riwayat': '#tableRiwayat',
+                    '/gudangpusat/barang': '#tableBarang',
+                    '/gudangpusat/stok': '#tableStok',
+                    '/gudangpusat/pengiriman': '#tablePengiriman'
+                };
+
+                let targetTable = null;
+                Object.keys(pageMap).forEach(path => {
+                    if (currentPath.includes(path)) targetTable = pageMap[path];
+                });
+
+                if (targetTable) {
+                    cariData(keyword, targetTable);
+                } else {
+                    window.location.href = currentPath + '?search=' + encodeURIComponent(keyword);
+                }
+            }
+        });
+
+        // Auto search jika ada parameter ?search=
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('search')) {
+            const keyword = params.get('search').toLowerCase();
+            const currentPath = window.location.pathname;
+
+            const pageMap = {
+                '/dashboard': '#dashboardContainer',
+                '/banjarbaru/barang': '#tableBarang',
+                '/banjarbaru/stok': '#tableStok',
+                '/banjarbaru/riwayat': '#tableRiwayat',
+                '/martapura/barang': '#tableBarang',
+                '/martapura/stok': '#tableStok',
+                '/martapura/riwayat': '#tableRiwayat',
+                '/lianganggang/barang': '#tableBarang',
+                '/lianganggang/stok': '#tableStok',
+                '/lianganggang/riwayat': '#tableRiwayat',
+                '/gudangpusat/barang': '#tableBarang',
+                '/gudangpusat/stok': '#tableStok',
+                '/gudangpusat/pengiriman': '#tablePengiriman'
+            };
+
+            Object.keys(pageMap).forEach(path => {
+                if (currentPath.includes(path)) cariData(keyword, pageMap[path]);
+            });
+        }
+
+        // Fungsi pencarian universal
+        function cariData(keyword, selector) {
+            let ditemukan = false;
+            $(selector + ' *').each(function () {
+                const text = $(this).text().toLowerCase();
+                if (text.includes(keyword)) {
+                    $(this).css('background', '#fff3cd');
+                    $('html, body').animate({ scrollTop: $(this).offset().top - 100 }, 600);
+                    ditemukan = true;
+                    return false;
+                } else {
+                    $(this).css('background', '');
+                }
+            });
+            if (!ditemukan) alert('Data dengan kata "' + keyword + '" tidak ditemukan di halaman ini.');
+        }
+    });
+    </script>
+</body>
 </html>

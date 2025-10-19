@@ -1,5 +1,15 @@
+@php
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+
+$role = strtolower(Auth::user()->role ?? '');
+$cabang = strtolower(Auth::user()->cabang ?? '');
+$currentPrefix = explode('.', Route::currentRouteName())[0] ?? '';
+@endphp
+
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
+    {{-- === HEADER === --}}
     <li class="nav-item sidebar-category">
       <p>Navigation</p>
       <span></span>
@@ -13,172 +23,169 @@
       </a>
     </li>
 
-    {{-- === CABANG === --}}
+    {{-- === CABANG HEADER === --}}
     <li class="nav-item sidebar-category">
       <p>Cabang</p>
       <span></span>
     </li>
 
-    @php
-      use Illuminate\Support\Facades\Route;
-      use Illuminate\Support\Str;
+    {{-- ===================================================== --}}
+    {{-- ================ SUPERADMIN VIEW ==================== --}}
+    {{-- ===================================================== --}}
+    @if($role === 'superadmin')
+      {{-- === BANJARBARU === --}}
+      @php $banjarActive = $currentPrefix === 'banjarbaru'; @endphp
+      <li class="nav-item">
+        <a class="nav-link sidebar-toggle {{ $banjarActive ? '' : 'collapsed' }}"
+           data-bs-toggle="collapse"
+           href="#menu-banjarbaru"
+           role="button"
+           aria-expanded="{{ $banjarActive ? 'true' : 'false' }}">
+          <i class="mdi mdi-store menu-icon"></i>
+          <span class="menu-title">Banjarbaru</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ $banjarActive ? 'show' : '' }}" id="menu-banjarbaru">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"><a class="nav-link" href="{{ route('banjarbaru.barang') }}">Data Barang</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('banjarbaru.stok') }}">Stok</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('banjarbaru.riwayat') }}">Riwayat Pengiriman</a></li>
+          </ul>
+        </div>
+      </li>
 
-      // Ambil prefix route aktif, misalnya "banjarbaru" dari "banjarbaru.barang"
-      $currentPrefix = explode('.', Route::currentRouteName())[0] ?? '';
-    @endphp
+      {{-- === MARTAPURA === --}}
+      @php $martapuraActive = $currentPrefix === 'martapura'; @endphp
+      <li class="nav-item">
+        <a class="nav-link sidebar-toggle {{ $martapuraActive ? '' : 'collapsed' }}"
+           data-bs-toggle="collapse"
+           href="#menu-martapura"
+           role="button"
+           aria-expanded="{{ $martapuraActive ? 'true' : 'false' }}">
+          <i class="mdi mdi-factory menu-icon"></i>
+          <span class="menu-title">Martapura</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ $martapuraActive ? 'show' : '' }}" id="menu-martapura">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"><a class="nav-link" href="{{ route('martapura.barang') }}">Data Barang</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('martapura.stok') }}">Stok</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('martapura.riwayat') }}">Riwayat Pengiriman</a></li>
+          </ul>
+        </div>
+      </li>
 
-    {{-- === BANJARBARU === --}}
-    @php $banjarActive = $currentPrefix === 'banjarbaru'; @endphp
-    <li class="nav-item">
-      <a class="nav-link sidebar-toggle {{ $banjarActive ? '' : 'collapsed' }}" href="#menu-banjarbaru" aria-expanded="{{ $banjarActive ? 'true' : 'false' }}">
-        <i class="mdi mdi-store menu-icon"></i>
-        <span class="menu-title">Banjarbaru</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse {{ $banjarActive ? 'show' : '' }}" id="menu-banjarbaru">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('banjarbaru.barang') ? 'active' : '' }}" href="{{ route('banjarbaru.barang') }}">Data Barang</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('banjarbaru.stok') ? 'active' : '' }}" href="{{ route('banjarbaru.stok') }}">Stok</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('banjarbaru.riwayat') ? 'active' : '' }}" href="{{ route('banjarbaru.riwayat') }}">Riwayat Pengiriman</a></li>
-        </ul>
-      </div>
-    </li>
+      {{-- === LIANG ANGGANG === --}}
+      @php $liangActive = $currentPrefix === 'lianganggang'; @endphp
+      <li class="nav-item">
+        <a class="nav-link sidebar-toggle {{ $liangActive ? '' : 'collapsed' }}"
+           data-bs-toggle="collapse"
+           href="#menu-liang"
+           role="button"
+           aria-expanded="{{ $liangActive ? 'true' : 'false' }}">
+          <i class="mdi mdi-store menu-icon"></i>
+          <span class="menu-title">Liang Anggang</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ $liangActive ? 'show' : '' }}" id="menu-liang">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"><a class="nav-link" href="{{ route('lianganggang.barang') }}">Data Barang</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('lianganggang.stok') }}">Stok</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('lianganggang.riwayat') }}">Riwayat Pengiriman</a></li>
+          </ul>
+        </div>
+      </li>
 
-    {{-- === MARTAPURA === --}}
-    @php $martapuraActive = $currentPrefix === 'martapura'; @endphp
-    <li class="nav-item">
-      <a class="nav-link sidebar-toggle {{ $martapuraActive ? '' : 'collapsed' }}" href="#menu-martapura" aria-expanded="{{ $martapuraActive ? 'true' : 'false' }}">
-        <i class="mdi mdi-factory menu-icon"></i>
-        <span class="menu-title">Martapura</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse {{ $martapuraActive ? 'show' : '' }}" id="menu-martapura">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('martapura.barang') ? 'active' : '' }}" href="{{ route('martapura.barang') }}">Data Barang</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('martapura.stok') ? 'active' : '' }}" href="{{ route('martapura.stok') }}">Stok</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('martapura.riwayat') ? 'active' : '' }}" href="{{ route('martapura.riwayat') }}">Riwayat Pengiriman</a></li>
-        </ul>
-      </div>
-    </li>
+      {{-- === GUDANG PUSAT === --}}
+      @php $gudangActive = $currentPrefix === 'gudangpusat'; @endphp
+      <li class="nav-item sidebar-category">
+        <p>Gudang Utama</p>
+        <span></span>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link sidebar-toggle {{ $gudangActive ? '' : 'collapsed' }}"
+           data-bs-toggle="collapse"
+           href="#menu-gudangpusat"
+           role="button"
+           aria-expanded="{{ $gudangActive ? 'true' : 'false' }}">
+          <i class="mdi mdi-warehouse menu-icon"></i>
+          <span class="menu-title">Gudang Pusat</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {{ $gudangActive ? 'show' : '' }}" id="menu-gudangpusat">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"><a class="nav-link" href="{{ route('gudangpusat.barang') }}">Data Barang</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('gudangpusat.stok') }}">Stok</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('gudangpusat.pengiriman') }}">Pengiriman</a></li>
+          </ul>
+        </div>
+      </li>
+    @endif
 
-    {{-- === LIANG ANGGANG === --}}
-    @php $liangActive = $currentPrefix === 'lianganggang'; @endphp
-    <li class="nav-item">
-      <a class="nav-link sidebar-toggle {{ $liangActive ? '' : 'collapsed' }}" href="#menu-liang" aria-expanded="{{ $liangActive ? 'true' : 'false' }}">
-        <i class="mdi mdi-store menu-icon"></i>
-        <span class="menu-title">Liang Anggang</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse {{ $liangActive ? 'show' : '' }}" id="menu-liang">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('lianganggang.barang') ? 'active' : '' }}" href="{{ route('lianganggang.barang') }}">Data Barang</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('lianganggang.stok') ? 'active' : '' }}" href="{{ route('lianganggang.stok') }}">Stok</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('lianganggang.riwayat') ? 'active' : '' }}" href="{{ route('lianganggang.riwayat') }}">Riwayat Pengiriman</a></li>
-        </ul>
-      </div>
-    </li>
+    {{-- ===================================================== --}}
+    {{-- ============== ADMIN CABANG MODE ==================== --}}
+    {{-- ===================================================== --}}
+    @if($role === 'admin_cabang')
+      <li class="nav-item sidebar-category">
+        <p>Cabang {{ ucfirst($cabang) }}</p>
+        <span></span>
+      </li>
 
-    <li class="nav-item sidebar-category">
-      <p>Gudang Utama</p>
-      <span></span>
-    </li>
+      @if($cabang === 'banjarbaru')
+        <li class="nav-item"><a class="nav-link" href="{{ route('banjarbaru.barang') }}"><i class="mdi mdi-package-variant-closed menu-icon"></i>Data Barang</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('banjarbaru.stok') }}"><i class="mdi mdi-cube menu-icon"></i>Stok</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('banjarbaru.riwayat') }}"><i class="mdi mdi-truck-delivery menu-icon"></i>Riwayat Pengiriman</a></li>
 
-    {{-- === GUDANG PUSAT === --}}
-    @php $gudangActive = $currentPrefix === 'gudangpusat'; @endphp
-    <li class="nav-item">
-      <a class="nav-link sidebar-toggle {{ $gudangActive ? '' : 'collapsed' }}" href="#menu-gudangpusat" aria-expanded="{{ $gudangActive ? 'true' : 'false' }}">
-        <i class="mdi mdi-warehouse menu-icon"></i>
-        <span class="menu-title">Gudang Pusat</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse {{ $gudangActive ? 'show' : '' }}" id="menu-gudangpusat">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('gudangpusat.barang') ? 'active' : '' }}" href="{{ route('gudangpusat.barang') }}">Data Barang</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('gudangpusat.stok') ? 'active' : '' }}" href="{{ route('gudangpusat.stok') }}">Stok</a></li>
-          <li class="nav-item"><a class="nav-link {{ request()->routeIs('gudangpusat.pengiriman') ? 'active' : '' }}" href="{{ route('gudangpusat.pengiriman') }}">Pengiriman</a></li>
-        </ul>
-      </div>
-    </li>
+      @elseif($cabang === 'martapura')
+        <li class="nav-item"><a class="nav-link" href="{{ route('martapura.barang') }}"><i class="mdi mdi-package-variant-closed menu-icon"></i>Data Barang</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('martapura.stok') }}"><i class="mdi mdi-cube menu-icon"></i>Stok</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('martapura.riwayat') }}"><i class="mdi mdi-truck-delivery menu-icon"></i>Riwayat Pengiriman</a></li>
+
+      @elseif($cabang === 'lianganggang')
+        <li class="nav-item"><a class="nav-link" href="{{ route('lianganggang.barang') }}"><i class="mdi mdi-package-variant-closed menu-icon"></i>Data Barang</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('lianganggang.stok') }}"><i class="mdi mdi-cube menu-icon"></i>Stok</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('lianganggang.riwayat') }}"><i class="mdi mdi-truck-delivery menu-icon"></i>Riwayat Pengiriman</a></li>
+
+      @elseif($cabang === 'gudangpusat')
+        <li class="nav-item"><a class="nav-link" href="{{ route('gudangpusat.barang') }}"><i class="mdi mdi-package-variant-closed menu-icon"></i>Data Barang</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('gudangpusat.stok') }}"><i class="mdi mdi-cube menu-icon"></i>Stok</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('gudangpusat.pengiriman') }}"><i class="mdi mdi-truck-delivery menu-icon"></i>Pengiriman</a></li>
+      @endif
+    @endif
   </ul>
 </nav>
 
-<script>
-(function () {
-  if (!window.bootstrap || !bootstrap.Collapse) return;
+<style>
+.menu-arrow { transition: transform 0.3s ease, color 0.2s ease; display: inline-block; margin-left: auto; }
+.menu-arrow.rotate { transform: rotate(90deg); }
+.collapse { transition: height 0.25s ease-in-out; }
+.nav-link.active { font-weight: 600; color: #0d6efd !important; text-decoration: underline; }
+.sub-menu .nav-link { padding-left: 2.2rem; }
+.sidebar-category p { text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; color: #9da5b1; }
+</style>
 
-  // --- Fungsi bantu: tutup semua dropdown kecuali yang diklik
-  function closeOtherMenus(current) {
-    document.querySelectorAll('.collapse.show').forEach(opened => {
-      if (opened !== current) {
-        const inst = bootstrap.Collapse.getInstance(opened);
-        if (inst) inst.hide();
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const sidebarToggles = document.querySelectorAll('.sidebar-toggle');
+  sidebarToggles.forEach(toggle => {
+    toggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetSelector = this.getAttribute('href');
+      const target = document.querySelector(targetSelector);
+      if (!target) return;
+      const collapse = bootstrap.Collapse.getOrCreateInstance(target);
+      const arrow = this.querySelector('.menu-arrow');
+      if (target.classList.contains('show')) {
+        collapse.hide(); arrow.classList.remove('rotate');
+      } else {
+        document.querySelectorAll('.collapse.show').forEach(opened => {
+          bootstrap.Collapse.getOrCreateInstance(opened).hide();
+          const openArrow = document.querySelector(`a[href="#${opened.id}"] .menu-arrow`);
+          openArrow?.classList.remove('rotate');
+        });
+        collapse.show(); arrow.classList.add('rotate');
       }
     });
-  }
-
-  // --- Inisialisasi panah sesuai kondisi awal
-  document.querySelectorAll('.sidebar-toggle').forEach(toggler => {
-    const target = document.querySelector(toggler.getAttribute('href'));
-    const arrow = toggler.querySelector('.menu-arrow');
-    if (target && target.classList.contains('show')) arrow.classList.add('rotate');
   });
-
-  // --- Event buka/tutup menu
-  document.querySelectorAll('.collapse').forEach(col => {
-    col.addEventListener('show.bs.collapse', function () {
-      closeOtherMenus(this); // tutup menu lain
-      const arrow = document.querySelector(`a.sidebar-toggle[href="#${this.id}"] .menu-arrow`);
-      arrow?.classList.add('rotate');
-    });
-
-    col.addEventListener('hide.bs.collapse', function () {
-      const arrow = document.querySelector(`a.sidebar-toggle[href="#${this.id}"] .menu-arrow`);
-      arrow?.classList.remove('rotate');
-    });
-  });
-
-  // --- Klik handler (toggle manual agar animasi tidak bentrok)
-  document.querySelectorAll('.sidebar-toggle').forEach(link => {
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      const target = document.querySelector(this.getAttribute('href'));
-      const instance = bootstrap.Collapse.getOrCreateInstance(target, { toggle: false });
-      const isOpen = target.classList.contains('show');
-      if (isOpen) instance.hide(); else instance.show();
-    });
-  });
-})();
+});
 </script>
-
-<style>
-/* Rotasi panah */
-.menu-arrow {
-  transition: transform 0.3s ease, color 0.2s ease;
-  display: inline-block;
-  margin-left: auto;
-}
-.menu-arrow.rotate { transform: rotate(90deg); }
-
-/* Transisi buka/tutup dropdown lebih halus */
-.collapse {
-  transition: height 0.25s ease-in-out;
-}
-
-/* Warna dan gaya link aktif */
-.nav-link.active {
-  font-weight: 600;
-  color: #0d6efd !important;
-  text-decoration: underline;
-}
-.sub-menu .nav-link {
-  padding-left: 2.2rem;
-}
-
-/* Judul kategori */
-.sidebar-category p {
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #9da5b1;
-}
-</style>

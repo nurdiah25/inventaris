@@ -23,6 +23,21 @@
       display: none;
     }
   }
+
+  /* Gaya tombol logout biar nyatu dengan dropdown */
+  form.logout-form button {
+    border: none;
+    background: none;
+    color: #212529;
+    width: 100%;
+    text-align: left;
+    padding: 8px 16px;
+  }
+
+  form.logout-form button:hover {
+    background-color: #f2f2f2;
+    color: #0d6efd;
+  }
 </style>
 
 <nav class="navbar col-lg-12 col-12 px-0 py-0 py-lg-4 d-flex flex-row">
@@ -51,7 +66,8 @@
 
       <!-- Messages -->
       <li class="nav-item dropdown me-1">
-        <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-bs-toggle="dropdown">
+        <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
+           id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
           <i class="mdi mdi-calendar mx-0"></i>
           <span class="count bg-info">2</span>
         </a>
@@ -59,29 +75,11 @@
           <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
-              <img src="images/faces/face4.jpg" alt="image" class="profile-pic">
+              <img src="{{ asset('images/faces/face4.jpg') }}" alt="image" class="profile-pic">
             </div>
             <div class="preview-item-content flex-grow">
               <h6 class="preview-subject ellipsis font-weight-normal">David Grey</h6>
               <p class="font-weight-light small-text text-muted mb-0">The meeting is cancelled</p>
-            </div>
-          </a>
-          <a class="dropdown-item preview-item">
-            <div class="preview-thumbnail">
-              <img src="images/faces/face2.jpg" alt="image" class="profile-pic">
-            </div>
-            <div class="preview-item-content flex-grow">
-              <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook</h6>
-              <p class="font-weight-light small-text text-muted mb-0">New product launch</p>
-            </div>
-          </a>
-          <a class="dropdown-item preview-item">
-            <div class="preview-thumbnail">
-              <img src="images/faces/face3.jpg" alt="image" class="profile-pic">
-            </div>
-            <div class="preview-item-content flex-grow">
-              <h6 class="preview-subject ellipsis font-weight-normal">Johnson</h6>
-              <p class="font-weight-light small-text text-muted mb-0">Upcoming board meeting</p>
             </div>
           </a>
         </div>
@@ -89,11 +87,13 @@
 
       <!-- Notifications -->
       <li class="nav-item dropdown me-2">
-        <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+        <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center"
+           id="notificationDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
           <i class="mdi mdi-email-open mx-0"></i>
           <span class="count bg-danger">1</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list"
+             aria-labelledby="notificationDropdown">
           <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
@@ -104,28 +104,6 @@
             <div class="preview-item-content">
               <h6 class="preview-subject font-weight-normal">Application Error</h6>
               <p class="font-weight-light small-text mb-0 text-muted">Just now</p>
-            </div>
-          </a>
-          <a class="dropdown-item preview-item">
-            <div class="preview-thumbnail">
-              <div class="preview-icon bg-warning">
-                <i class="mdi mdi-settings mx-0"></i>
-              </div>
-            </div>
-            <div class="preview-item-content">
-              <h6 class="preview-subject font-weight-normal">Settings</h6>
-              <p class="font-weight-light small-text mb-0 text-muted">Private message</p>
-            </div>
-          </a>
-          <a class="dropdown-item preview-item">
-            <div class="preview-thumbnail">
-              <div class="preview-icon bg-info">
-                <i class="mdi mdi-account-box mx-0"></i>
-              </div>
-            </div>
-            <div class="preview-item-content">
-              <h6 class="preview-subject font-weight-normal">New user registration</h6>
-              <p class="font-weight-light small-text mb-0 text-muted">2 days ago</p>
             </div>
           </a>
         </div>
@@ -145,26 +123,30 @@
     <ul class="navbar-nav mr-lg-2">
       <li class="nav-item nav-search d-none d-lg-block">
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search Here..." aria-label="search" aria-describedby="search">
+          <input type="text" id="navbarSearch" class="form-control" placeholder="Search Here..." aria-label="search">
         </div>
       </li>
     </ul>
 
-    <!-- Profile dan Icon -->
+    <!-- Profile dan Logout -->
     <ul class="navbar-nav navbar-nav-right">
       <li class="nav-item nav-profile dropdown">
-        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-          <img src="images/faces/face5.jpg" alt="profile"/>
-          <span class="nav-profile-name">Eleanor Richardson</span>
+        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" data-toggle="dropdown" aria-expanded="false">
+          <img src="{{ asset('images/faces/face5.jpg') }}" alt="profile"/>
+          <span class="nav-profile-name">{{ Auth::user()->name ?? 'User' }}</span>
         </a>
         <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
           <a class="dropdown-item"><i class="mdi mdi-settings text-primary"></i> Settings</a>
-          <a class="dropdown-item"><i class="mdi mdi-logout text-primary"></i> Logout</a>
+
+          <!-- Tombol Logout -->
+          <form method="POST" action="{{ route('logout') }}" class="logout-form">
+            @csrf
+            <button type="submit" class="dropdown-item">
+              <i class="mdi mdi-logout text-primary"></i> Logout
+            </button>
+          </form>
         </div>
       </li>
-      <li class="nav-item"><a href="#" class="nav-link icon-link"><i class="mdi mdi-plus-circle-outline"></i></a></li>
-      <li class="nav-item"><a href="#" class="nav-link icon-link"><i class="mdi mdi-web"></i></a></li>
-      <li class="nav-item"><a href="#" class="nav-link icon-link"><i class="mdi mdi-clock-outline"></i></a></li>
     </ul>
   </div>
 </nav>
