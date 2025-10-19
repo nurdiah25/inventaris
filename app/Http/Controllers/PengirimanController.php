@@ -10,21 +10,22 @@ use Illuminate\Http\Request;
 
 class PengirimanController extends Controller
 {
-    // === Halaman daftar pengiriman dari GudangPusat ===
+    // === Halaman daftar pengiriman dari Gudang Pusat ===
     public function index()
     {
-        $gudangData = Cabang::where('nama_cabang', 'gudangpusat')->firstOrFail();
+        $gudangData = Cabang::where('slug', 'gudangpusat')->firstOrFail();
         $pengiriman = Pengiriman::with('barang')
             ->where('id_cabang', $gudangData->id_cabang)
             ->latest()
             ->get();
+
         $barangs = Barang::where('id_cabang', $gudangData->id_cabang)->get();
-        $cabangs = Cabang::where('nama_cabang', '!=', 'gudangpusat')->get();
+        $cabangs = Cabang::where('slug', '!=', 'gudangpusat')->get();
 
         return view('gudangpusat.pengiriman', compact('pengiriman', 'barangs', 'cabangs', 'gudangData'));
     }
 
-    // === Tambah pengiriman dari GudangPusat ke cabang ===
+    // === Tambah pengiriman dari Gudang Pusat ke cabang ===
     public function store(Request $request)
     {
         $request->validate([
@@ -34,7 +35,7 @@ class PengirimanController extends Controller
             'tanggal_pengiriman' => 'required|date',
         ]);
 
-        $gudangData = Cabang::where('nama_cabang', 'gudangpusat')->firstOrFail();
+        $gudangData = Cabang::where('slug', 'gudangpusat')->firstOrFail();
         $barang = Barang::findOrFail($request->id_barang);
 
         if ($barang->stok < $request->jumlah) {
@@ -44,15 +45,17 @@ class PengirimanController extends Controller
         Pengiriman::create([
             'id_barang' => $barang->id_barang,
             'id_cabang' => $gudangData->id_cabang,
-            'tujuan_pengiriman' => $request->tujuan_pengiriman,
+            'tujuan_pengiriman' => strtolower($request->tujuan_pengiriman),
             'jumlah' => $request->jumlah,
             'tanggal_pengiriman' => $request->tanggal_pengiriman,
             'status_pengiriman' => 'Dikemas',
         ]);
 
+        // Kurangi stok gudang
         $barang->stok -= $request->jumlah;
         $barang->save();
 
+        // Catat di tabel stok keluar
         Stok::create([
             'id_barang' => $barang->id_barang,
             'id_cabang' => $gudangData->id_cabang,
@@ -63,66 +66,71 @@ class PengirimanController extends Controller
         return redirect()->route('gudangpusat.pengiriman')->with('success', 'Pengiriman berhasil ditambahkan.');
     }
 
-    // === Update status pengiriman ===
-public function updateStatus(Request $request, $id)
-{
-    $pengiriman = Pengiriman::findOrFail($id);
+    // === Update status pengiriman dari Gudang ===
+    public function updateStatus(Request $request, $id)
+    {
+        $pengiriman = Pengiriman::findOrFail($id);
 
-    // Cegah perubahan jika status sudah Dikirim
-    if ($pengiriman->status_pengiriman === 'Dikirim') {
-        return redirect()->back()->with('error', 'Status sudah Dikirim dan tidak bisa diubah lagi.');
+        if ($pengiriman->status_pengiriman === 'Dikirim') {
+            return back()->with('error', 'Status sudah Dikirim dan tidak bisa diubah lagi.');
+        }
+
+        $status = $request->status_pengiriman;
+        if (!in_array($status, ['Dikemas', 'Dikirim'])) {
+            return back()->with('error', 'Status tidak valid untuk gudang.');
+        }
+
+        $pengiriman->status_pengiriman = $status;
+        $pengiriman->save();
+
+        return back()->with('success', 'Status pengiriman berhasil diperbarui.');
     }
 
-    $status = $request->status_pengiriman;
-    if (!in_array($status, ['Dikemas', 'Dikirim'])) {
-        return redirect()->back()->with('error', 'Status tidak valid untuk gudang.');
+    // === Update penerimaan barang oleh cabang ===
+    public function updatePenerimaan($cabang, $id_pengiriman)
+    {
+        $cabangData = Cabang::where('slug', strtolower($cabang))->firstOrFail();
+        $pengiriman = Pengiriman::findOrFail($id_pengiriman);
+
+        if ($pengiriman->status_pengiriman !== 'Dikirim') {
+            return back()->with('error', 'Barang belum dikirim oleh gudang.');
+        }
+
+        $pengiriman->status_pengiriman = 'Diterima';
+        $pengiriman->status_penerimaan = 'Diterima';
+        $pengiriman->save();
+
+        // Tambahkan stok barang di cabang penerima
+        $barangCabang = Barang::where('nama_barang', $pengiriman->barang->nama_barang)
+            ->where('id_cabang', $cabangData->id_cabang)
+            ->first();
+
+        if ($barangCabang) {
+            $barangCabang->stok += $pengiriman->jumlah;
+            $barangCabang->save();
+        }
+
+        return back()->with('success', 'Barang telah diterima oleh cabang.');
     }
-
-    $pengiriman->status_pengiriman = $status;
-    $pengiriman->save();
-
-    return redirect()->back()->with('success', 'Status pengiriman berhasil diperbarui.');
-}
-
-    // === Update Penerimaan === //
-    public function updatePenerimaan($id)
-{
-    $pengiriman = Pengiriman::findOrFail($id);
-
-    // Hanya bisa diterima jika statusnya sudah dikirim
-    if ($pengiriman->status_pengiriman !== 'Dikirim') {
-        return redirect()->back()->with('error', 'Barang belum dikirim oleh gudang.');
-    }
-
-    $pengiriman->status_penerimaan = 'Diterima';
-    $pengiriman->status_pengiriman = 'Diterima';
-    $pengiriman->save();
-
-    return redirect()->back()->with('success', 'Barang telah diterima cabang.');
-}
-
 
     // === Hapus pengiriman ===
     public function destroy($id)
     {
         $pengiriman = Pengiriman::findOrFail($id);
         $pengiriman->delete();
-
         return redirect()->route('gudangpusat.pengiriman')->with('success', 'Data pengiriman berhasil dihapus.');
     }
 
-    // === Riwayat Pengiriman ke Cabang ===
+    // === Riwayat pengiriman ke cabang ===
     public function riwayat($cabang)
     {
-        $cabangData = Cabang::where('nama_cabang', $cabang)->firstOrFail();
+        $cabangData = Cabang::where('slug', strtolower($cabang))->firstOrFail();
 
-    // Ambil semua pengiriman dari gudangpusat ke cabang ini
         $riwayat = Pengiriman::with('barang')
-            ->where('tujuan_pengiriman', $cabangData->nama_cabang)
+            ->whereRaw('LOWER(tujuan_pengiriman) = ?', [$cabangData->slug])
             ->latest()
             ->get();
 
-        return view("$cabang.riwayat", compact('riwayat', 'cabangData'));
+        return view("{$cabangData->slug}.riwayat", compact('riwayat', 'cabangData'));
     }
-
 }

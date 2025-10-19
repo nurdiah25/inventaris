@@ -9,7 +9,7 @@
 </div>
 
 @if(session('success'))
-<div class="alert alert-success mt-2">{{ session('success') }}</div>
+    <div class="alert alert-success mt-2">{{ session('success') }}</div>
 @endif
 
 <div class="card mt-3">
@@ -34,38 +34,34 @@
                         <td>{{ $stok->jumlah_masuk }}</td>
                         <td>{{ $stok->tanggal }}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#modalEditStok{{ $stok->id_stok }}">
+                            <!-- Tombol Edit -->
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditStok{{ $stok->id_stok }}">
                                 Edit
                             </button>
 
-<form action="{{ route($cabangData->nama_cabang . '.stok.destroy', ['id_stok' => $stok->id_stok]) }}"
-      method="POST" class="d-inline">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-danger btn-sm"
-        onclick="return confirm('Yakin ingin menghapus data ini?')">
-        Hapus
-    </button>
-</form>
-
-
+                            <!-- Tombol Hapus -->
+                            <form action="{{ route($cabangData->slug . '.stok.destroy', ['cabang' => $cabangData->slug, 'id_stok' => $stok->id_stok]) }}"
+                                  method="POST" class="d-inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
 
                     <!-- Modal Edit -->
-                    <div class="modal fade" id="modalEditStok{{ $stok->id_stok }}" tabindex="-1"
-                        aria-labelledby="modalEditStokLabel{{ $stok->id_stok }}" aria-hidden="true">
+                    <div class="modal fade" id="modalEditStok{{ $stok->id_stok }}" tabindex="-1" aria-labelledby="modalEditStokLabel{{ $stok->id_stok }}" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
-                                <form
-                                    action="{{ route($cabangData->nama_cabang . '.stok.update', $stok->id_stok) }}"
-                                    method="POST">
+                                <form action="{{ route($cabangData->slug . '.stok.update', ['cabang' => $cabangData->slug, 'id_stok' => $stok->id_stok]) }}"
+                                      method="POST">
                                     @csrf
                                     @method('PUT')
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="modalEditStokLabel{{ $stok->id_stok }}">Edit
-                                            Stok</h5>
+                                        <h5 class="modal-title" id="modalEditStokLabel{{ $stok->id_stok }}">Edit Stok</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
 
@@ -84,20 +80,17 @@
 
                                         <div class="mb-3">
                                             <label class="form-label">Jumlah Masuk</label>
-                                            <input type="number" name="jumlah_masuk" class="form-control"
-                                                value="{{ $stok->jumlah_masuk }}" min="0" required>
+                                            <input type="number" name="jumlah_masuk" class="form-control" value="{{ $stok->jumlah_masuk }}" min="0" required>
                                         </div>
 
                                         <div class="mb-3">
                                             <label class="form-label">Tanggal</label>
-                                            <input type="date" name="tanggal" class="form-control"
-                                                value="{{ $stok->tanggal }}" required>
+                                            <input type="date" name="tanggal" class="form-control" value="{{ $stok->tanggal }}" required>
                                         </div>
                                     </div>
 
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Batal</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                                     </div>
                                 </form>
@@ -105,9 +98,7 @@
                         </div>
                     </div>
                     @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">Belum ada data stok</td>
-                    </tr>
+                        <tr><td colspan="6" class="text-center text-muted">Belum ada data stok</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -119,7 +110,7 @@
 <div class="modal fade" id="modalTambahStok" tabindex="-1" aria-labelledby="modalTambahStokLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route($cabangData->nama_cabang . '.stok.store') }}" method="POST">
+            <form action="{{ route($cabangData->slug . '.stok.store', ['cabang' => $cabangData->slug]) }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTambahStokLabel">Tambah Stok</h5>

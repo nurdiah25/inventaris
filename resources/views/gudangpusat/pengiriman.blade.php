@@ -113,7 +113,7 @@
                         <select name="tujuan_pengiriman" class="form-control" required>
                             <option value="">-- Pilih Cabang Tujuan --</option>
                             @foreach($cabangs as $cabang)
-                                <option value="{{ $cabang->nama_cabang }}">{{ ucfirst($cabang->nama_cabang) }}</option>
+                                <option value="{{ $cabang->slug }}">{{ ucfirst($cabang->nama_cabang) }}</option>
                             @endforeach
                         </select>
                     </div>

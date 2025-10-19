@@ -11,8 +11,19 @@ class Cabang extends Model
 
     protected $table = 'cabangs';
     protected $primaryKey = 'id_cabang';
-    protected $fillable = ['nama_cabang', 'alamat'];
+    protected $fillable = ['nama_cabang', 'alamat', 'slug'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($cabang) {
+            if (empty($cabang->slug)) {
+                $cabang->slug = Str::slug($cabang->nama_cabang);
+            }
+        });
+    }
+    
     public function barangs()
     {
         return $this->hasMany(Barang::class, 'id_cabang', 'id_cabang');

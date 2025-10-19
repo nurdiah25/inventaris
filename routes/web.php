@@ -1,11 +1,14 @@
 <?php
 
+use App\Models\Cabang;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PenggunaController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -172,4 +175,73 @@ Route::middleware(['auth', 'role:gudangpusat'])->prefix('gudangpusat')->group(fu
         ->name('gudangpusat.pengiriman.destroy')->defaults('cabang', 'gudangpusat');
 });
 
+/*
+|--------------------------------------------------------------------------
+| SUPERADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:superadmin'])->group(function () {
+    Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna.index');
+    Route::post('/pengguna', [PenggunaController::class, 'store'])->name('pengguna.store');
+    Route::put('/pengguna/{id}', [PenggunaController::class, 'update'])->name('pengguna.update');
+    Route::delete('/pengguna/{id}', [PenggunaController::class, 'destroy'])->name('pengguna.destroy');
+});
+
+// ============================================================
+// 🔹 ROUTE DINAMIS UNTUK SEMUA CABANG DI DATABASE
+// ============================================================
+Route::middleware(['auth'])->group(function () {
+    $cabangs = Cabang::all();
+
+    foreach ($cabangs as $cabang) {
+        $slug = $cabang->slug;
+
+        Route::prefix($slug)
+            ->middleware("role:$slug")
+            ->group(function () use ($slug) {
+                // Barang
+                Route::get('/barang', [BarangController::class, 'index'])
+                    ->name("$slug.barang")
+                    ->defaults('cabang', $slug);
+
+                Route::post('/barang', [BarangController::class, 'store'])
+                    ->name("$slug.barang.store")
+                    ->defaults('cabang', $slug);
+
+                Route::put('/barang/{id_barang}', [BarangController::class, 'update'])
+                    ->name("$slug.barang.update")
+                    ->defaults('cabang', $slug);
+
+                Route::delete('/barang/{id_barang}', [BarangController::class, 'destroy'])
+                    ->name("$slug.barang.destroy")
+                    ->defaults('cabang', $slug);
+
+                // Stok
+                Route::get('/stok', [StokController::class, 'index'])
+                    ->name("$slug.stok")
+                    ->defaults('cabang', $slug);
+
+                Route::post('/stok', [StokController::class, 'store'])
+                    ->name("$slug.stok.store")
+                    ->defaults('cabang', $slug);
+
+                Route::put('/stok/{id_stok}', [StokController::class, 'update'])
+                    ->name("$slug.stok.update")
+                    ->defaults('cabang', $slug);
+
+                Route::delete('/stok/{id_stok}', [StokController::class, 'destroy'])
+                    ->name("$slug.stok.destroy")
+                    ->defaults('cabang', $slug);
+
+                // Riwayat Pengiriman
+                Route::get('/riwayat', [PengirimanController::class, 'riwayat'])
+                    ->name("$slug.riwayat")
+                    ->defaults('cabang', $slug);
+
+                Route::put('/riwayat/terima/{id_pengiriman}', [PengirimanController::class, 'updatePenerimaan'])
+                    ->name("$slug.riwayat.terima")
+                    ->defaults('cabang', $slug);
+            });
+    }
+});
 require __DIR__ . '/auth.php';

@@ -9,7 +9,10 @@
 </div>
 
 @if(session('success'))
-<div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success mt-2">{{ session('success') }}</div>
+@endif
+@if(session('error'))
+    <div class="alert alert-danger mt-2">{{ session('error') }}</div>
 @endif
 
 <div class="card mt-3">
@@ -53,11 +56,13 @@
                             <td>{{ $barang->stok }}</td>
                             <td><span class="badge {{ $badgeClass }}">{{ $status }}</span></td>
                             <td>
+                                <!-- Tombol Edit -->
                                 <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditBarang{{ $barang->id_barang }}">
                                     Edit
                                 </button>
 
-                                <form action="{{ route($cabangData->nama_cabang . '.barang.destroy', $barang->id_barang) }}" method="POST" class="d-inline">
+                                <!-- Tombol Hapus -->
+                                <form action="{{ route($cabangData->slug . '.barang.destroy', $barang->id_barang) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus barang ini?')">
@@ -71,7 +76,7 @@
                         <div class="modal fade" id="modalEditBarang{{ $barang->id_barang }}" tabindex="-1" aria-labelledby="modalEditBarangLabel{{ $barang->id_barang }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
-                                    <form action="{{ route($cabangData->nama_cabang . '.barang.update', $barang->id_barang) }}" method="POST">
+                                    <form action="{{ route($cabangData->slug . '.barang.update', $barang->id_barang) }}" method="POST">
                                         @csrf
                                         @method('PUT')
                                         <div class="modal-header">
@@ -81,17 +86,17 @@
 
                                         <div class="modal-body">
                                             <div class="mb-3">
-                                                <label for="nama_barang" class="form-label">Nama Barang</label>
+                                                <label class="form-label">Nama Barang</label>
                                                 <input type="text" name="nama_barang" class="form-control" value="{{ $barang->nama_barang }}" required>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="harga" class="form-label">Harga</label>
+                                                <label class="form-label">Harga</label>
                                                 <input type="number" name="harga" class="form-control" value="{{ $barang->harga }}">
                                             </div>
 
                                             <div class="mb-3">
-                                                <label for="stok" class="form-label">Stok</label>
+                                                <label class="form-label">Stok</label>
                                                 <input type="number" name="stok" class="form-control" value="{{ $barang->stok }}" required>
                                             </div>
                                         </div>
@@ -119,7 +124,7 @@
 <div class="modal fade" id="modalTambahBarang" tabindex="-1" aria-labelledby="modalTambahBarangLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form action="{{ route($cabangData->nama_cabang . '.barang.store') }}" method="POST">
+            <form action="{{ route($cabangData->slug . '.barang.store') }}" method="POST">
                 @csrf
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalTambahBarangLabel">Tambah Barang</h5>
@@ -128,17 +133,17 @@
 
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="nama_barang" class="form-label">Nama Barang</label>
+                        <label class="form-label">Nama Barang</label>
                         <input type="text" name="nama_barang" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="harga" class="form-label">Harga</label>
+                        <label class="form-label">Harga</label>
                         <input type="number" name="harga" class="form-control">
                     </div>
 
                     <div class="mb-3">
-                        <label for="stok" class="form-label">Stok</label>
+                        <label class="form-label">Stok</label>
                         <input type="number" name="stok" class="form-control" required>
                     </div>
                 </div>
