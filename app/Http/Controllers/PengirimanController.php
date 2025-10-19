@@ -86,32 +86,52 @@ class PengirimanController extends Controller
         return back()->with('success', 'Status pengiriman berhasil diperbarui.');
     }
 
-    // === Update penerimaan barang oleh cabang ===
-    public function updatePenerimaan($cabang, $id_pengiriman)
-    {
-        $cabangData = Cabang::where('slug', strtolower($cabang))->firstOrFail();
-        $pengiriman = Pengiriman::findOrFail($id_pengiriman);
+// === Update penerimaan barang oleh cabang ===
+public function updatePenerimaan($id_pengiriman, $cabang = null)
+{
+    $slug = strtolower(str_replace(' ', '', $cabang ?? request()->route('cabang')));
+    $cabangData = Cabang::where('slug', $slug)->firstOrFail();
+    $pengiriman = Pengiriman::with('barang')->findOrFail($id_pengiriman);
 
-        if ($pengiriman->status_pengiriman !== 'Dikirim') {
-            return back()->with('error', 'Barang belum dikirim oleh gudang.');
-        }
-
-        $pengiriman->status_pengiriman = 'Diterima';
-        $pengiriman->status_penerimaan = 'Diterima';
-        $pengiriman->save();
-
-        // Tambahkan stok barang di cabang penerima
-        $barangCabang = Barang::where('nama_barang', $pengiriman->barang->nama_barang)
-            ->where('id_cabang', $cabangData->id_cabang)
-            ->first();
-
-        if ($barangCabang) {
-            $barangCabang->stok += $pengiriman->jumlah;
-            $barangCabang->save();
-        }
-
-        return back()->with('success', 'Barang telah diterima oleh cabang.');
+    if ($pengiriman->status_pengiriman !== 'Dikirim') {
+        return back()->with('error', 'Barang belum dikirim oleh gudang.');
     }
+
+    // Ubah status jadi diterima
+    $pengiriman->status_pengiriman = 'Diterima';
+    $pengiriman->status_penerimaan = 'Diterima';
+    $pengiriman->save();
+
+    // Cek apakah barang sudah ada di cabang
+    $barangCabang = Barang::where('nama_barang', $pengiriman->barang->nama_barang)
+        ->where('id_cabang', $cabangData->id_cabang)
+        ->first();
+
+    // Jika belum ada → buat barang baru di cabang penerima
+    if (!$barangCabang) {
+        $barangCabang = Barang::create([
+            'nama_barang' => $pengiriman->barang->nama_barang,
+            'harga' => $pengiriman->barang->harga ?? 0,
+            'stok' => 0,
+            'id_cabang' => $cabangData->id_cabang,
+        ]);
+    }
+
+    // Tambahkan stok barang di cabang penerima
+    $barangCabang->stok += $pengiriman->jumlah;
+    $barangCabang->save();
+
+    // Catat ke tabel stok masuk
+    Stok::create([
+        'id_barang' => $barangCabang->id_barang,
+        'id_cabang' => $cabangData->id_cabang,
+        'jumlah_masuk' => $pengiriman->jumlah,
+        'tanggal' => now(),
+    ]);
+
+    return back()->with('success', 'Barang telah diterima oleh cabang dan stok diperbarui.');
+}
+
 
     // === Hapus pengiriman ===
     public function destroy($id)

@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\File;
 class BarangController extends Controller
 {
     // === TAMPILKAN DATA BARANG PER CABANG ===
-    public function index(Request $request, $cabang)
+    public function index(Request $request, $cabang = null)
     {
-        $slug = strtolower(str_replace(' ', '', $cabang));
+        $slug = strtolower(str_replace(' ', '', $cabang ?? $request->route('cabang')));
         $cabangData = Cabang::where('slug', $slug)->first();
 
-        if (!$cabangData) abort(404, 'Cabang tidak ditemukan.');
+        if (!$cabangData) {
+            abort(404, 'Cabang tidak ditemukan.');
+        }
 
         $barangs = Barang::where('id_cabang', $cabangData->id_cabang)->get();
 
@@ -27,9 +29,9 @@ class BarangController extends Controller
     }
 
     // === TAMBAH BARANG BARU ===
-    public function store(Request $request, $cabang)
+    public function store(Request $request, $cabang = null)
     {
-        $slug = strtolower(str_replace(' ', '', $cabang));
+        $slug = strtolower(str_replace(' ', '', $cabang ?? $request->route('cabang')));
         $cabangData = Cabang::where('slug', $slug)->firstOrFail();
 
         $request->validate([
@@ -49,8 +51,10 @@ class BarangController extends Controller
     }
 
     // === UPDATE BARANG ===
-    public function update(Request $request, $cabang, $id_barang)
+    public function update(Request $request, $id_barang, $cabang = null)
     {
+        $slug = strtolower(str_replace(' ', '', $cabang ?? $request->route('cabang')));
+
         $request->validate([
             'nama_barang' => 'required|string|max:255',
             'harga' => 'nullable|integer',
@@ -60,15 +64,17 @@ class BarangController extends Controller
         $barang = Barang::findOrFail($id_barang);
         $barang->update($request->only(['nama_barang', 'harga', 'stok']));
 
-        return redirect()->route(strtolower($cabang) . '.barang')->with('success', 'Barang berhasil diperbarui.');
+        return redirect()->route("$slug.barang")->with('success', 'Barang berhasil diperbarui.');
     }
 
     // === HAPUS BARANG ===
-    public function destroy($cabang, $id_barang)
+    public function destroy($id_barang, $cabang = null)
     {
+        $slug = strtolower(str_replace(' ', '', $cabang ?? request()->route('cabang')));
+
         $barang = Barang::findOrFail($id_barang);
         $barang->delete();
 
-        return redirect()->route(strtolower($cabang) . '.barang')->with('success', 'Barang berhasil dihapus.');
+        return redirect()->route("$slug.barang")->with('success', 'Barang berhasil dihapus.');
     }
 }

@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 class StokController extends Controller
 {
     // === TAMPILKAN HALAMAN STOK PER CABANG ===
-    public function index($cabang)
+    public function index($cabang = null)
     {
-        $cabangData = Cabang::where('slug', strtolower($cabang))->firstOrFail();
+        $slug = strtolower(str_replace(' ', '', $cabang ?? request()->route('cabang')));
+        $cabangData = Cabang::where('slug', $slug)->firstOrFail();
+
         $stoks = Stok::with('barang')->where('id_cabang', $cabangData->id_cabang)->get();
         $barangs = Barang::where('id_cabang', $cabangData->id_cabang)->get();
 
@@ -20,17 +22,18 @@ class StokController extends Controller
     }
 
     // === TAMBAH STOK BARU ===
-    public function store(Request $request, $cabang)
+    public function store(Request $request, $cabang = null)
     {
+        $slug = strtolower(str_replace(' ', '', $cabang ?? $request->route('cabang')));
+        $cabangData = Cabang::where('slug', $slug)->firstOrFail();
+
         $request->validate([
             'id_barang' => 'required|exists:barangs,id_barang',
-            'jumlah_masuk' => 'required|integer|min:0',
+            'jumlah_masuk' => 'required|integer|min:1',
             'tanggal' => 'required|date',
         ]);
 
-        $cabangData = Cabang::where('slug', strtolower($cabang))->firstOrFail();
-
-        // Tambah stok
+        // Tambah stok ke tabel stok
         $stok = Stok::create([
             'id_barang' => $request->id_barang,
             'id_cabang' => $cabangData->id_cabang,
@@ -38,29 +41,31 @@ class StokController extends Controller
             'tanggal' => $request->tanggal,
         ]);
 
-        // Update stok barang
+        // Tambah stok ke barang terkait
         $barang = Barang::find($request->id_barang);
         if ($barang) {
             $barang->stok += $request->jumlah_masuk;
             $barang->save();
         }
 
-        return redirect()->route($cabangData->slug . '.stok')->with('success', 'Data stok berhasil ditambahkan.');
+        return redirect()->route("{$slug}.stok")->with('success', 'Data stok berhasil ditambahkan.');
     }
 
     // === UPDATE DATA STOK ===
-    public function update(Request $request, $cabang, $id_stok)
+    public function update(Request $request, $id_stok, $cabang = null)
     {
+        $slug = strtolower(str_replace(' ', '', $cabang ?? $request->route('cabang')));
+        $cabangData = Cabang::where('slug', $slug)->firstOrFail();
+
         $request->validate([
             'id_barang' => 'required|exists:barangs,id_barang',
-            'jumlah_masuk' => 'required|integer|min:0',
+            'jumlah_masuk' => 'required|integer|min:1',
             'tanggal' => 'required|date',
         ]);
 
-        $cabangData = Cabang::where('slug', strtolower($cabang))->firstOrFail();
         $stok = Stok::findOrFail($id_stok);
 
-        // Kurangi stok lama
+        // Kurangi stok lama dari barang lama
         $barangLama = Barang::find($stok->id_barang);
         if ($barangLama) {
             $barangLama->stok -= $stok->jumlah_masuk;
@@ -68,27 +73,29 @@ class StokController extends Controller
             $barangLama->save();
         }
 
-        // Update stok baru
+        // Update data stok
         $stok->update([
             'id_barang' => $request->id_barang,
             'jumlah_masuk' => $request->jumlah_masuk,
             'tanggal' => $request->tanggal,
         ]);
 
-        // Tambah stok baru ke barang tujuan
+        // Tambahkan stok baru ke barang tujuan
         $barangBaru = Barang::find($request->id_barang);
         if ($barangBaru) {
             $barangBaru->stok += $request->jumlah_masuk;
             $barangBaru->save();
         }
 
-        return redirect()->route($cabangData->slug . '.stok')->with('success', 'Data stok berhasil diperbarui.');
+        return redirect()->route("{$slug}.stok")->with('success', 'Data stok berhasil diperbarui.');
     }
 
     // === HAPUS DATA STOK ===
-    public function destroy($cabang, $id_stok)
+    public function destroy($id_stok, $cabang = null)
     {
-        $cabangData = Cabang::where('slug', strtolower($cabang))->firstOrFail();
+        $slug = strtolower(str_replace(' ', '', $cabang ?? request()->route('cabang')));
+        $cabangData = Cabang::where('slug', $slug)->firstOrFail();
+
         $stok = Stok::findOrFail($id_stok);
         $barang = Barang::find($stok->id_barang);
 
@@ -100,6 +107,6 @@ class StokController extends Controller
 
         $stok->delete();
 
-        return redirect()->route($cabangData->slug . '.stok')->with('success', 'Data stok berhasil dihapus.');
+        return redirect()->route("{$slug}.stok")->with('success', 'Data stok berhasil dihapus.');
     }
 }
