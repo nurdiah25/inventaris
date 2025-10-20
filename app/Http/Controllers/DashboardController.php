@@ -5,84 +5,86 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Cabang;
 
 class DashboardController extends Controller
 {
     public function __construct()
     {
-        // Pastikan hanya user login yang bisa akses dashboard
         $this->middleware('auth');
     }
 
     public function index()
     {
-        $role = Auth::user()->role ?? '';
+        $user = Auth::user();
+        $role = strtolower($user->role ?? '');
+        $cabangUser = strtolower($user->cabang ?? '');
 
-        // Jika superadmin, tampilkan semua cabang
+        // === SUPERADMIN: TAMPILKAN SEMUA CABANG SECARA DINAMIS ===
         if ($role === 'superadmin') {
+            // Ambil semua cabang dari tabel cabangs (kecuali gudangpusat, ditampilkan terpisah)
+            $cabangs = Cabang::where('nama_cabang', '!=', 'gudangpusat')->get();
+
+            // Gudang pusat
             $jumlahGudangPusat = DB::table('barangs')
                 ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
                 ->where('cabangs.nama_cabang', 'gudangpusat')
                 ->distinct('barangs.nama_barang')
                 ->count('barangs.nama_barang');
 
-            $jumlahBanjarbaru = DB::table('barangs')
-                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-                ->where('cabangs.nama_cabang', 'banjarbaru')
-                ->distinct('barangs.nama_barang')
-                ->count('barangs.nama_barang');
-
-            $jumlahMartapura = DB::table('barangs')
-                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-                ->where('cabangs.nama_cabang', 'martapura')
-                ->distinct('barangs.nama_barang')
-                ->count('barangs.nama_barang');
-
-            $jumlahLiangAnggang = DB::table('barangs')
-                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-                ->where('cabangs.nama_cabang', 'lianganggang')
-                ->distinct('barangs.nama_barang')
-                ->count('barangs.nama_barang');
-
-            // Total stok per cabang
             $totalGudangPusat = DB::table('barangs')
                 ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
                 ->where('cabangs.nama_cabang', 'gudangpusat')
                 ->sum('barangs.stok');
 
-            $totalBanjarbaru = DB::table('barangs')
-                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-                ->where('cabangs.nama_cabang', 'banjarbaru')
-                ->sum('barangs.stok');
+            // Simpan data tiap cabang dalam array dinamis
+            $dataCabang = [];
+            foreach ($cabangs as $cabang) {
+                $nama = strtolower($cabang->nama_cabang);
 
-            $totalMartapura = DB::table('barangs')
-                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-                ->where('cabangs.nama_cabang', 'martapura')
-                ->sum('barangs.stok');
+                $jumlahJenis = DB::table('barangs')
+                    ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
+                    ->where('cabangs.nama_cabang', $nama)
+                    ->distinct('barangs.nama_barang')
+                    ->count('barangs.nama_barang');
 
-            $totalLiangAnggang = DB::table('barangs')
-                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-                ->where('cabangs.nama_cabang', 'lianganggang')
-                ->sum('barangs.stok');
+                $totalStok = DB::table('barangs')
+                    ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
+                    ->where('cabangs.nama_cabang', $nama)
+                    ->sum('barangs.stok');
 
-            return view('dashboard', compact(
-                'jumlahGudangPusat', 'jumlahBanjarbaru', 'jumlahMartapura', 'jumlahLiangAnggang',
-                'totalGudangPusat', 'totalBanjarbaru', 'totalMartapura', 'totalLiangAnggang'
-            ));
+                $dataCabang[$nama] = [
+                    'nama' => ucfirst($nama),
+                    'jumlahJenis' => $jumlahJenis,
+                    'totalStok' => $totalStok
+                ];
+            }
+
+            return view('dashboard', [
+                'jumlahGudangPusat' => $jumlahGudangPusat,
+                'totalGudangPusat' => $totalGudangPusat,
+                'dataCabang' => $dataCabang,
+                'cabangs' => $cabangs
+            ]);
         }
 
-        // Jika admin cabang, tampilkan hanya cabangnya sendiri
-        $jumlahJenis = DB::table('barangs')
-            ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-            ->where('cabangs.nama_cabang', $role)
-            ->distinct('barangs.nama_barang')
-            ->count('barangs.nama_barang');
+        // === ADMIN CABANG: HANYA CABANGNYA SENDIRI ===
+        if ($role === 'admin_cabang') {
+            $jumlahJenis = DB::table('barangs')
+                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
+                ->where('cabangs.nama_cabang', $cabangUser)
+                ->distinct('barangs.nama_barang')
+                ->count('barangs.nama_barang');
 
-        $totalStok = DB::table('barangs')
-            ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
-            ->where('cabangs.nama_cabang', $role)
-            ->sum('barangs.stok');
+            $totalStok = DB::table('barangs')
+                ->join('cabangs', 'barangs.id_cabang', '=', 'cabangs.id_cabang')
+                ->where('cabangs.nama_cabang', $cabangUser)
+                ->sum('barangs.stok');
 
-        return view('dashboard', compact('role', 'jumlahJenis', 'totalStok'));
+            return view('dashboard', compact('cabangUser', 'jumlahJenis', 'totalStok'));
+        }
+
+        // === DEFAULT: jika role tidak dikenal ===
+        return redirect()->route('dashboard')->with('error', 'Akses tidak valid.');
     }
 }

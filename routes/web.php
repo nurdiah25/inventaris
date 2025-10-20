@@ -8,6 +8,7 @@ use App\Http\Controllers\StokController;
 use App\Http\Controllers\PengirimanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -112,6 +113,11 @@ Route::any('/{cabang}/barang/{id_barang}', [BarangController::class, 'update'])
     ->where('cabang', '[A-Za-z0-9-_]+')
     ->name('barang.update.fallback');
 
+// notifikasi di navbar
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+});
 /*
 |--------------------------------------------------------------------------
 | Auth Routes

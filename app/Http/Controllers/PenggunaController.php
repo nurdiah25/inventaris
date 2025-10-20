@@ -29,13 +29,13 @@ class PenggunaController extends Controller
 
         $slug = Str::slug($request->cabang);
 
-        // 🔹 1. Tambahkan ke tabel cabangs (jika belum ada)
+        // 🔹 1. Tambahkan cabang baru ke tabel `cabangs` bila belum ada
         $cabang = Cabang::firstOrCreate(
             ['slug' => $slug],
             ['nama_cabang' => ucfirst($request->cabang), 'alamat' => '-']
         );
 
-        // 🔹 2. Tambahkan user admin cabang
+        // 🔹 2. Tambahkan user admin cabang baru
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -44,16 +44,59 @@ class PenggunaController extends Controller
             'cabang' => $slug,
         ]);
 
-        // 🔹 3. Buat folder view cabang (copy dari banjarbaru)
-        $source = resource_path('views/banjarbaru');
-        $target = resource_path('views/' . $slug);
-        if (!File::exists($target)) {
-            File::makeDirectory($target, 0777, true);
-            File::copyDirectory($source, $target);
+        // === 3️⃣ Buat folder view cabang otomatis dari folder template_cabang ===
+        $templatePath = resource_path('views/template_cabang');
+        $targetPath = resource_path('views/' . $slug);
+
+        if (!File::exists($targetPath)) {
+            File::makeDirectory($targetPath, 0777, true);
+
+            // Jika folder template_cabang tersedia, copy seluruh isi di dalamnya
+            if (File::exists($templatePath)) {
+                File::copyDirectory($templatePath, $targetPath);
+            } else {
+                // Kalau folder template_cabang belum ada, buat file default minimal
+                File::put($targetPath . '/barang.blade.php', <<<BLADE
+@extends('layouts.app')
+@section('content')
+<div class="container">
+  <h4>📦 Data Barang - {{ ucfirst('$slug') }}</h4>
+  <p>Halaman data barang untuk cabang {{ ucfirst('$slug') }}.</p>
+</div>
+@endsection
+BLADE);
+
+                File::put($targetPath . '/stok.blade.php', <<<BLADE
+@extends('layouts.app')
+@section('content')
+<div class="container">
+  <h4>📊 Stok Barang - {{ ucfirst('$slug') }}</h4>
+  <p>Halaman stok barang untuk cabang {{ ucfirst('$slug') }}.</p>
+</div>
+@endsection
+BLADE);
+
+                File::put($targetPath . '/riwayat.blade.php', <<<BLADE
+@extends('layouts.app')
+@section('content')
+<div class="container">
+  <h4>🚚 Riwayat Pengiriman - {{ ucfirst('$slug') }}</h4>
+  <p>Halaman riwayat pengiriman untuk cabang {{ ucfirst('$slug') }}.</p>
+</div>
+@endsection
+BLADE);
+            }
         }
 
+        // 🔹 4. Bersihkan cache biar sidebar langsung update otomatis
+        Artisan::call('view:clear');
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+        Artisan::call('config:clear');
+        Artisan::call('optimize:clear');
+
         return redirect()->route('pengguna.index')
-            ->with('success', '✅ Admin cabang dan tampilan berhasil ditambahkan!');
+            ->with('success', '✅ Admin cabang dan tampilan otomatis berhasil ditambahkan!');
     }
 
     public function update(Request $request, $id)
@@ -67,7 +110,7 @@ class PenggunaController extends Controller
 
         $slug = Str::slug($request->cabang);
 
-        // 🔹 Pastikan cabang ada
+        // 🔹 Pastikan cabang ada di tabel
         Cabang::firstOrCreate(['slug' => $slug], ['nama_cabang' => ucfirst($request->cabang)]);
 
         $user->update([
